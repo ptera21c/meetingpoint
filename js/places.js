@@ -5,6 +5,7 @@
 
 const PlacesService = (function() {
     let placesService;
+    let apiKey = null;
     
     /**
      * Initialize the Places service
@@ -12,6 +13,15 @@ const PlacesService = (function() {
      */
     function init(map) {
         placesService = new google.maps.places.PlacesService(map);
+        // Get the API key from our server
+        fetch('http://localhost:5000/api/maps-api-key')
+            .then(response => response.json())
+            .then(data => {
+                apiKey = data.apiKey;
+            })
+            .catch(error => {
+                console.error('Failed to get API key:', error);
+            });
     }
     
     /**
@@ -96,7 +106,7 @@ const PlacesService = (function() {
 
 
             // Call your proxy server
-        fetch(`https://meeting-point-finder-proxy-0eefa3c2e5c8.herokuapp.com/api/places/nearby?${queryParams}`)
+        fetch(`http://localhost:3000/api/places/nearby?${queryParams}`)
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'OK' && data.results) {
@@ -164,7 +174,18 @@ const PlacesService = (function() {
      */
     function getPhotoUrl(photo, maxWidth = 400) {
         if (!photo) return null;
-        return photo.getUrl({ maxWidth });
+        
+        // If the photo object has a getUrl method (direct from Places API)
+        if (typeof photo.getUrl === 'function') {
+            return photo.getUrl({ maxWidth });
+        }
+        
+        // If we have a photo reference (from our proxy)
+        if (photo.photo_reference && apiKey) {
+            return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=${maxWidth}&photo_reference=${photo.photo_reference}&key=${apiKey}`;
+        }
+        
+        return null;
     }
     
     /**

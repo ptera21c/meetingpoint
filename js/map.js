@@ -7,28 +7,37 @@ let map;
 let markers = [];
 let infoWindow;
 let autocompletes = [];
+let googleMaps;
 
 /**
  * Initialize the Google Map
+ * @param {Object} google - The Google Maps object
  */
-function initMap() {
+export function initMap(google) {
+    if (!google || !google.maps) {
+        console.error("Google Maps object is not properly initialized");
+        return;
+    }
+
+    googleMaps = google;
+    
     // Default center (will be updated based on user input)
     const defaultCenter = { lat: -37.8136, lng: 144.9631 }; // Melbourne, Australia
     
     // Create a new map instance
-    map = new google.maps.Map(document.getElementById('map'), {
+    map = new googleMaps.maps.Map(document.getElementById('map'), {
         center: defaultCenter,
         zoom: 12,
         mapTypeControl: true,
         fullscreenControl: true,
         streetViewControl: false,
         mapTypeControlOptions: {
-            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+            style: googleMaps.maps.MapTypeControlStyle.DROPDOWN_MENU
         }
     });
     
     // Create a single info window to be reused for markers
-    infoWindow = new google.maps.InfoWindow();
+    infoWindow = new googleMaps.maps.InfoWindow();
     
     // Initialize the Places service
     PlacesService.init(map);
@@ -53,7 +62,7 @@ function initAutocompleteForAddressInputs() {
  * Map Manager Module
  * Handles map operations and calculations
  */
-const MapManager = (function() {
+export const MapManager = (function() {
     /**
      * Initialize Google Places Autocomplete for an input field
      * @param {HTMLElement} inputElement - The input element to attach autocomplete to
@@ -69,7 +78,7 @@ const MapManager = (function() {
         };
         
         // Create the autocomplete instance
-        const autocomplete = new google.maps.places.Autocomplete(inputElement, options);
+        const autocomplete = new googleMaps.maps.places.Autocomplete(inputElement, options);
         
         // Store the autocomplete instance
         autocompletes.push(autocomplete);
@@ -94,7 +103,7 @@ const MapManager = (function() {
      */
     function geocodeAddress(address) {
         return new Promise((resolve, reject) => {
-            fetch(`https://meeting-point-finder-proxy-0eefa3c2e5c8.herokuapp.com/api/geocode?address=${encodeURIComponent(address)}`)
+            fetch(`http://localhost:3000/api/geocode?address=${encodeURIComponent(address)}`)
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'OK' && data.results[0]) {
@@ -185,17 +194,17 @@ const MapManager = (function() {
             position,
             map,
             title,
-            animation: google.maps.Animation.DROP
+            animation: googleMaps.maps.Animation.DROP
         };
         
         if (icon) {
             markerOptions.icon = {
                 url: icon,
-                scaledSize: new google.maps.Size(30, 30)
+                scaledSize: new googleMaps.maps.Size(30, 30)
             };
         }
         
-        const marker = new google.maps.Marker(markerOptions);
+        const marker = new googleMaps.maps.Marker(markerOptions);
         markers.push(marker);
         
         return marker;
@@ -293,7 +302,7 @@ const MapManager = (function() {
     function fitMapToMarkers() {
         if (markers.length === 0) return;
         
-        const bounds = new google.maps.LatLngBounds();
+        const bounds = new googleMaps.maps.LatLngBounds();
         
         markers.forEach(marker => {
             bounds.extend(marker.getPosition());
@@ -302,11 +311,11 @@ const MapManager = (function() {
         map.fitBounds(bounds);
         
         // If zoom is too close, zoom out a bit
-        const listener = google.maps.event.addListener(map, 'idle', () => {
+        const listener = googleMaps.maps.event.addListener(map, 'idle', () => {
             if (map.getZoom() > 16) {
                 map.setZoom(16);
             }
-            google.maps.event.removeListener(listener);
+            googleMaps.maps.event.removeListener(listener);
         });
     }
     

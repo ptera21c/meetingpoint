@@ -26,27 +26,50 @@ A web application that helps users find the perfect meeting place between multip
    - Create an API key under APIs & Services > Credentials
    - Restrict the API key to the APIs mentioned above for security
    - Make sure billing is enabled for your Google Cloud project (required for the APIs to work)
-   - If you're getting a "REQUEST_DENIED" error, check that all the above steps are completed correctly
 
-3. **Generate a favicon (optional)**
+3. **Set up the Proxy Server (for API key security)**
+   - Navigate to the proxy server directory:
+     ```
+     cd meeting-point-finder-proxy
+     ```
+   - Install dependencies:
+     ```
+     npm install
+     ```
+   - Create a `.env` file with your Google Maps API key:
+     ```
+     GOOGLE_MAPS_API_KEY=your_actual_api_key_here
+     PORT=3000
+     ```
+   - Start the proxy server:
+     ```
+     node server.js
+     ```
+   - For more details, see the [Proxy Server README](../meeting-point-finder-proxy/README.md)
+
+4. **Generate a favicon (optional)**
    - Open the `favicon.html` file in a web browser
    - Click the "Generate Favicon" button
    - Right-click on the generated icon and select "Save Image As..."
    - Save the file as "favicon.ico" in the root directory of the application
 
-4. **Add your API Key to the application**
-   - Open `index.html` in a text editor
-   - Find the Google Maps script tag near the bottom of the file
-   - Replace `YOUR_API_KEY` with your actual API key:
-     ```html
-     <script async defer
-         src="https://maps.googleapis.com/maps/api/js?key=YOUR_ACTUAL_API_KEY_HERE&libraries=places&callback=initMap">
-     </script>
+5. **Set up the Frontend Server**
+   - Navigate to the main application directory:
      ```
-
-5. **Open the application**
-   - Simply open the `index.html` file in a web browser
-   - No server setup is required as this is a client-side application
+     cd meeting-point-finder
+     ```
+   - Install dependencies:
+     ```
+     npm install
+     ```
+   - Start the frontend server:
+     ```
+     npm start
+     ```
+   - The server will start at http://localhost:5000
+   - Open your browser to http://localhost:5000 to view the application
+   - Make sure the proxy server is also running (step 3)
+   - The application will fetch the API key securely from the proxy server
 
 ## How to Use
 
@@ -64,9 +87,28 @@ A web application that helps users find the perfect meeting place between multip
 - Built with vanilla JavaScript, HTML, and CSS
 - Uses the Google Maps JavaScript API for mapping and geocoding
 - Uses the Google Places API for finding venues and address autocomplete
+- Implements a secure proxy server to protect the Google Maps API key
 - Stores favorites in the browser's local storage
 - Responsive design using CSS Grid and Flexbox
 - Implements the geocentric midpoint calculation algorithm for finding the central point between multiple coordinates
+
+## Security Features
+
+- **API Key Protection**: The Google Maps API key is stored securely on the server side
+- **Proxy Server**: All requests to Google APIs are routed through a proxy server
+- **Dynamic Loading**: The Google Maps JavaScript API is loaded dynamically with the key from the proxy server
+- **Module Architecture**: Uses ES modules for better code organization and security
+
+## Deployment
+
+### Frontend Deployment
+- The frontend can be deployed to any static hosting service (GitHub Pages, Netlify, Vercel, etc.)
+- Update the proxy server URLs in the JavaScript files to point to your deployed proxy server
+
+### Proxy Server Deployment
+- The proxy server can be deployed to a Node.js hosting service (Heroku, Vercel, AWS, etc.)
+- Set the `GOOGLE_MAPS_API_KEY` environment variable on your hosting service
+- Update the CORS settings in `server.js` to allow requests from your frontend domain
 
 ## License
 
