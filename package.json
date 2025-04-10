@@ -4,8 +4,7 @@
   "description": "Web application to find the perfect meeting place between multiple addresses",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node server.js"
   },
   "keywords": [
     "maps",
@@ -17,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.8",
-    "express": "^4.18.2"
+    "express": "^4.21.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
