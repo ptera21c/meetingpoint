@@ -4,7 +4,7 @@ import { Loader } from "https://unpkg.com/@googlemaps/js-api-loader@1.15.1/dist/
 export async function initializeGoogleMaps() {
     try {
         // Fetch the API key from your backend proxy
-        const response = await fetch('http://localhost:5000/api/maps-api-key');
+        const response = await fetch('/api/maps-api-key');
         const data = await response.json();
         const apiKey = data.apiKey;
 
